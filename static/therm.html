@@ -1,0 +1,316 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+<html>
+<head>
+  <title> Missions Day </title>
+  <link type="text/css" href="js/css/no-theme/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />	
+                              
+  <script type="text/javascript" src="js/js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="js/js/jquery-ui-1.7.2.custom.min.js"></script>
+  <script>
+    $(function() {
+       $("#pb").progressbar({ value: 0 });
+       update(0,0,45000);
+     });
+
+
+var jaime_mode = false;
+
+var current_verse = 0;
+var total_verses = 21;
+
+setInterval("changeverse()", 10000);
+
+function changeverse() {
+    $(".verses").css("display", "none");
+    if (jaime_mode) {
+       $("#jaime").css("display", "block");
+    }
+    else {
+      var i;
+      current_verse = (current_verse + 1) % total_verses;
+      $("#v" + current_verse).css("display", "block");
+    }
+}
+
+  </script>
+
+<script>
+
+function formn(n) {
+ return "$" + n;
+}
+
+
+function update(amount, goal) {
+  // figure out our start and goal values.
+  var start_figure = 0;
+  var goal_figure = goal;
+
+  if (amount > goal) {
+    jaime_mode = true;
+    changeverse();
+  }
+
+  if (amount > (goal + 1000)) {
+    start_figure = goal;
+    goal_figure  = goal + 10000;        
+  }
+
+
+
+  $("#therm-goal-l").html(formn(start_figure));
+  $("#therm-goal-r").html(formn(goal_figure));
+  $("#total").html(formn(amount));
+  $("#pb").progressbar('value',  ((amount - start_figure) / (goal_figure - start_figure)) * 100  );
+  updateCurrencies(amount);
+  $(".overflow").html(amount-goal);
+
+}
+
+var currencies = [ ["#MXN", 12.76],
+                   ["#CLP", 496.6],
+                   ["#NIO", 20.89],
+                   ["#ecuador-wm", (1/500)],
+                   ["#africa-well", (1/4500)]
+                 ];
+
+function updateCurrencies(amt) {
+  $(".scurrency").html(formn(amt));
+  for (var i = 0; i<currencies.length; i++) {
+     $(currencies[i][0]).html(Math.round(amt * currencies[i][1]));
+  }
+}
+
+function getupdate() {
+$.get("/tvtotal", {},
+  function(data){
+           update(data[0], data[1]);
+    },
+  "json");
+}
+
+setInterval("getupdate()", 1000);
+                                    
+
+</script>
+  <style>
+
+body {
+  background: #bfecf9;
+}
+
+#pb {
+ width: 100%;
+height: 100%;
+}
+
+
+div#therm-container {
+width: 80%;
+margin-left: auto;
+margin-right: auto;
+height: 10%;
+}
+
+* {
+font-family: sans-serif, helvetica, verdana, arial;}
+
+
+div#therm-values {
+font-weight: bold;
+font-size: 24px;
+}
+
+#therm-goal-l {
+text-align: left;
+width: 33%;
+float: left;
+}
+
+#therm-goal-r {
+text-align: right;
+width: 33%;
+float: left;
+}
+
+div#therm-goal-c {
+text-align: center;
+width: 34%;
+float: left;
+}
+
+div#total {
+text-align:center;
+font-size: 140px;
+}
+
+.verses {
+font-style: italic;
+font-size: 24px;
+font-weight: bold;
+margin-left: auto;
+margin-right: auto;
+width: 80%;
+border: 4px solid #efbd34;
+background: #efdeb0;
+padding: 10px;
+display:none;
+height: 45%;
+overflow: auto;
+}
+
+#v0 {
+display: block;
+}
+
+
+.verses img {
+float: left;
+}
+
+.currency {
+  font-size: 48px;
+}
+
+.peep {
+  font-size: 64px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.verses p {
+ font-size: 36px;
+ font-weight: bold;
+}
+  </style>
+</head>
+<body>
+  <div id="total"> $33,000</div>
+  <div id="therm-container">
+    <div id="therm-progress">
+      <div id="pb"></div>
+    </div>
+    <div id="therm-values">
+      <div id="therm-goal-l">-</div>
+      <div id="therm-goal-c">&nbsp;</div>
+      <div id="therm-goal-r">-</div>
+    </div>
+  </div>
+  <div style="clear:both;" />
+  <div class="verses" id="jaime">
+    <img src="img/jaime.png" height="100%" style="float: left"/>
+    CHESSSSSSSSSS!
+    <p> WE DID IT! <br/>
+    We are $<span class="overflow">0</span> over our goal! </p>
+  </div>
+  <div class="verses" id="v0">
+    Then Jesus came to them and said, "All authority in heaven and on
+    earth has been given to me. Therefore go and make disciples of all
+    nations, baptizing them in the name of the Father and of the
+    Son and of the Holy Spirit, and teaching them to obey everything I
+    have commanded you. And surely I am with you always, to the very
+    end of the age." -- Matthew 28:18-20 (NIV)
+  </div>
+  <div class="verses" id="v1">
+    "But you will receive power when the Holy Spirit comes on you; and
+    you will be my witnesses in Jerusalem, and in all Judea and
+    Samaria, and to the ends of the earth." -- Acts 1:8 (NIV)
+  </div>
+  <div class="verses" id="v2">
+    <div class="peep">Tere De Leon - Mexico </div>
+  </div>
+  <div class="verses" id="v3">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> is <span id="COP"></span><br/>Colombian Pesos.
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v4">
+    <div class="peep">David Anabalon - Chile </div>
+  </div>
+  <div class="verses" id="v5">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> is <span id="MXN"></span><br/>Mexican Pesos.
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v6">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> is <span id="CLP"></span><br/> Chilean Pesos.
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v7">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> is <span id="NIO"></span><br/>Nicaragua Cordobas.
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v8">
+    Y Jesús se acercó y les habló diciendo: Toda potestad me es dada
+    en el cielo y en la tierra.  Por tanto, id, y haced discípulos a
+    todas las naciones, bautizándolos en el nombre del Padre, y del
+    Hijo, y del Espíritu Santo; enseñándoles que guarden todas las
+    cosas que os he mandado; y he aquí yo estoy con vosotros todos los
+    días, hasta el fin del mundo. Amén. (Mateo 28:18-20)
+  </div>
+  <div class="verses" id="v9">
+    pero recibiréis poder, cuando haya venido sobre vosotros el Espíritu
+    Santo, y me seréis testigos en Jerusalén, en toda Judea, en Samaria, y
+    hasta lo último de la tierra. (Hechos 1:8)
+  </div>
+  <div class="verses" id="v10">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> can buy <span id="ecuador-wm"></span><br/> washing machines in Ecuador
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v11">
+    <div class="currency">
+      <center>
+        <span class="scurrency"></span> can build <span id="africa-well"></span><br/>wells in Africa.
+      </center>
+    </div>
+  </div>
+  <div class="verses" id="v12">
+    <div class="peep">Mario Espinoza - Nicaragua </div>
+  </div>
+  <div class="verses" id="v13">
+    <div class="peep">Rene Marroquin - El Salvador </div>
+  </div>
+  <div class="verses" id="v14">
+    <div class="peep">Luis Cubillo - Honduras </div>
+  </div>
+  <div class="verses" id="v15">
+    <div class="peep">Elizabeth Johanson - Honduras </div>
+  </div>
+  <div class="verses" id="v16">
+    <div class="peep">Hector Tamez - Mexico </div>
+  </div>
+  <div class="verses" id="v17">
+    <div class="peep">Pepe Carrazco - Bolivia </div>
+  </div>
+  <div class="verses" id="v18">
+    <div class="peep">Donna Saune - Peru </div>
+  </div>
+  <div class="verses" id="v19">
+    <div class="peep">Virginia Bentson - Argentina </div>
+  </div>
+  <div class="verses" id="v20">
+    <div class="peep">Jose Murillo - Costa Rica </div>
+  </div>
+  <div class="verses" id="v21">
+    <div class="peep">Alex Puerta - Colombia </div>
+  </div>
+  <div class="verses" id="v21">
+    <div class="peep">Carlos Gil - Mexico </div>
+  </div>
+
+</div>
+</body>
+</html>

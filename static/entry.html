@@ -1,0 +1,182 @@
+<html>
+<head>
+  <title> Entry </title>
+  <script type="text/javascript" src="js/js/jquery-1.3.2.min.js"></script>
+<style>
+
+* {
+ font-family: arial, verdana, helvetica, sans-serif;
+}
+
+body {
+  background: #bfecf9;
+}
+
+table {
+ border: 1px solid #99f;
+ padding: 10px;
+ width: 600px;
+ background: #eef;
+}
+
+
+th {
+text-align: left;
+width: 200px;
+font-size: 18px;
+}
+
+</style>
+<script>
+
+function rn(rnum, rlength) { 
+  return Math.round(rnum*Math.pow(10,rlength))/Math.pow(10,rlength);
+}
+
+ function pagereset () {
+  $("#new_pledger_row").css("visibility", "hidden");
+  $("#loading").css("visibility", "hidden");
+  document.getElementById("results").length = 0;
+  $("#search").val("");
+  $("#new").val("");
+  $("#per_year").val("0");
+  $("#per_month").val("0");
+  $("#submit").val("Enter Pledge").attr("disabled", false);
+  $("#search").focus(); 
+ }
+
+ function monthcalc (event) {
+    var val = $("#per_month").val();
+    if (val.match("^[0-9\.]+$")) {
+       $("#per_year").val("" + rn((parseFloat(val) * 12), 2));
+    }
+    else {
+       $("#per_year").val("0");
+    }
+ }
+
+ function yearcalc (event) {
+    var val = $("#per_year").val();
+    if (val.match("^[0-9\.]+$")) {
+       $("#per_month").val("" + rn((parseFloat(val) / 12), 2));
+    }
+    else {
+       $("#per_month").val("0");
+    }
+ }
+
+
+
+function focus_amount (e) {
+ var key = e.keyCode || e.which;
+ if (key == 13) {
+   $("#per_month").focus().select();
+
+ }
+}
+
+function search_enter (e) {
+ var key = e.keyCode || e.which;
+ if (key == 13) {
+   ajaxsearch();
+ }
+}
+
+function submitfocus (e) {
+ var key = e.keyCode || e.which;
+ if (key == 13) {
+   $("#submit").focus();
+ }
+}
+
+function ajaxsearch () {
+   $("#loading").css("visibility", "visible");
+    $.ajax({
+     url:      "/search",
+     data:     ({ name: $("#search").val() }),
+     dataType: "json",
+     success:  function (data) {
+       $("#loading").css("display", "none");
+       $("#new_pledger_row").css("visibility", "visible");
+       var sel = document.getElementById("results");
+       sel.length = 0;
+       if (data == null) { 
+         sel.options[0] = new Option("No Results.", 0);
+         $("#new").focus();
+         return;
+       }
+       var i;
+         $("#results").focus();
+       for (i = 0; i < data.length; i++) {
+         var contrib = data[i];
+         sel.options[i] = new Option(contrib[1], contrib[0]);
+       }
+      }   
+     });
+}
+
+
+function submitpledge() {
+    $("#submit").val("Entering...").attr("disabled", true);
+    $.ajax({
+      url:   "/enter",
+      data:   { id:    $("#results").val(),
+                new:   $("#new").val(),
+                year:  $("#per_year").val(),
+              },
+      success: function (data) {
+                  pagereset();
+      },
+      error: function (request, status, error) {
+               alert("Pledge submission failed. Please try again.");
+               $("#submit").val("Enter Pledge").attr("disabled", false);
+      },
+    });
+}
+
+</script>
+</head>
+<body onload="pagereset();">
+<h1> Pledge Entry </h1>
+<table>
+  <tr>
+    <th> Search </th>
+    <td> 
+      <input type="text" id="search" name="search" onKeyPress="search_enter(event)" /> 
+      <img id="loading" style="visibility: hidden " src="img/search.gif" />
+    </td>
+    
+  </tr>
+  <tr>
+    <th> Results </th>
+    <td> 
+      <select name="results" id="results" width="80%" onKeyPress="focus_amount(event)">
+        <option> none ... </option>
+      </select>
+    </td>
+  </tr>
+  <tr id="new_pledger_row" style="visibility: hidden">
+    <th> New Pledger </th>
+    <td> <input type="text" id="new" name="new" onKeyPress="focus_amount(event)" /> </td>
+  </tr>
+  <tr>
+    <th> Amount per month </th>
+    <td> <input type="text" id="per_month" name="per_month" onKeyUp="monthcalc(event)" onKeyPress="submitfocus(event)" /> </td>
+  </tr>
+  <tr>
+    <th> Amount per year </th>
+    <td> <input type="text" id="per_year" name="per_year" onKeyUp="yearcalc(event)" onKeyPress="submitfocus(event)"/> </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <center>
+        <input id="submit" type="button" value="Enter Pledge" onClick="submitpledge()"/>
+      </center>
+    </td>
+  </tr>
+</table>
+
+  
+
+</body>
+</html>
